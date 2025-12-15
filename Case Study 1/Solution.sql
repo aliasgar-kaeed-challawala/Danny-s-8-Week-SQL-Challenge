@@ -87,3 +87,44 @@ inner join menu m
 on a.product_id = m.product_id
 where rnk = 1
 order by a.customer_id;
+
+-- 7. Which item was purchased just before the customer became a member?
+
+Select 
+s.customer_id,
+m.product_name
+from
+(
+  Select 
+  s.customer_id,
+  order_date,
+  join_date,
+  product_id,
+  Row_Number() over(partition by s.customer_id order by order_date desc) as rn
+  from Sales s
+  join members m
+  on s.customer_id = m.customer_id
+  and s.order_date < m.join_date
+) s
+ join menu m on 
+ s.product_id = m.product_id
+ where rn = 1
+  ;
+
+
+-- 8. What is the total items and amount spent for each member before they became a member?
+Select 
+s.customer_id,
+Count(s.product_id) as total_items,
+SUM(m.price) as amount_spent
+from Sales s
+inner join members me
+on
+	s.customer_id = me.customer_id
+    AND s.order_date < me.join_date
+inner join menu m
+on 
+	s.product_id = m.product_id
+Group by 
+s.customer_id
+order by s.customer_id
