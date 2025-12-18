@@ -176,3 +176,21 @@ with dates as (
  on s.product_id = m.product_id
 Group by s.customer_id
 
+-- Bonus Questions
+-- Join all the tables so as to derive the insights without needing to join the underlying tables using SQL.
+Select s.customer_id,
+s.order_date,
+m.product_name,
+m.price,
+CASE 
+	WHEN s.order_date < mem.join_date THEN 'N'
+    WHEN s.order_date >= mem.join_date THEN 'Y'
+    ELSE 'N'
+END AS member
+from 
+menu m
+inner join sales s
+on m.product_id = s.product_id
+left JOIN members mem
+on s.customer_id = mem.customer_id
+order by customer_id, order_date;
