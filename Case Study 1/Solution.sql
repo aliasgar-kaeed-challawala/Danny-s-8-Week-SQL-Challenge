@@ -177,6 +177,7 @@ with dates as (
 Group by s.customer_id
 
 -- Bonus Questions
+
 -- Join all the tables so as to derive the insights without needing to join the underlying tables using SQL.
 Select s.customer_id,
 s.order_date,
@@ -194,3 +195,29 @@ on m.product_id = s.product_id
 left JOIN members mem
 on s.customer_id = mem.customer_id
 order by customer_id, order_date;
+
+-- Ranking members
+with customers as (
+  Select s.customer_id,
+s.order_date,
+m.product_name,
+m.price,
+CASE 
+	WHEN s.order_date < mem.join_date THEN 'N'
+    WHEN s.order_date >= mem.join_date THEN 'Y'
+    ELSE 'N'
+END AS member
+from 
+menu m
+inner join sales s
+on m.product_id = s.product_id
+left JOIN members mem
+on s.customer_id = mem.customer_id
+order by customer_id, order_date)
+
+Select *,
+Case when 
+      member = 'N' Then Null
+      else RANK() Over(partition by customer_id,member order by order_date)
+    END As ranking
+    from customers;
