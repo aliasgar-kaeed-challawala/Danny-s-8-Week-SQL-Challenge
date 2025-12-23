@@ -48,3 +48,9 @@ SET pickup_time =
          ELSE 
          	cancellation
          END;
+
+-- Changing the datatypes of pickup_time to Timestamp, distance to float and duration to INT in runner_orders table
+ALTER TABLE runner_orders_temp
+ALTER COLUMN pickup_time DATETIME,
+ALTER COLUMN distance FLOAT,
+ALTER COLUMN duration INT;
