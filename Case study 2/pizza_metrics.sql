@@ -31,3 +31,32 @@ join pizza_names p
 on c.pizza_id = p.pizza_id
 WHERE r.cancellation = ''
 GROUP by p.pizza_name;
+
+-- 5. How many Vegetarian and Meatlovers were ordered by each customer?
+
+Select 
+c.customer_id,
+p.pizza_name,
+Count(p.pizza_name) as order_count
+from
+customer_orders c inner join pizza_names p
+on c.pizza_id = p.pizza_id
+GROUP BY c.customer_id, p.pizza_name
+ORDER BY c.customer_id
+;
+ 
+-- 6. What was the maximum number of pizzas delivered in a single order?
+
+Select
+MAX(pizza_count_per_order) as Maximum_pizzas_delivered
+from
+(Select
+c.order_id,
+count(pizza_id) as pizza_count_per_order
+from
+customer_orders c inner join runner_orders r 
+on c.order_id =  r.order_id
+where r.cancellation is null or r.cancellation = ''
+group by c.order_id
+Order by c.order_id) a
+;
