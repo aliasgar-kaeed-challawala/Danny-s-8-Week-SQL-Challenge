@@ -60,3 +60,48 @@ where r.cancellation is null or r.cancellation = ''
 group by c.order_id
 Order by c.order_id) a
 ;
+
+-- 7. For each customer, how many delivered pizzas had at least 1 change and how many had no changes?
+
+Select customer_id,
+SUM(
+	CASE WHEN 
+  		 c.exclusions = '' AND c.extras = '' THEN 1 ELSE 0
+  	END	
+) AS no_change,
+SUM(
+	CASE WHEN 
+  		 c.exclusions != '' OR c.extras != '' THEN 1 ELSE 0
+  	END	
+) AS changed
+from customer_orders c inner join runner_orders r
+on c.order_id = r.order_id
+and r.cancellation = ''
+GROUP BY customer_id
+ORDER BY customer_id;
+
+-- 8. How many pizzas were delivered that had both exclusions and extras?
+
+Select
+SUM(
+	CASE WHEN 
+  		 c.exclusions != '' AND c.extras != '' THEN 1 ELSE 0
+	END
+) as both_exclusions_and_extras
+from customer_orders c inner join runner_orders r
+on c.order_id = r.order_id
+and r.cancellation = ''
+;
+
+-- 9. What was the total volume of pizzas ordered for each hour of the day?
+SELECT EXTRACT(HOUR from order_time) as hour ,count(order_id) AS order_count_per_hour
+FROM customer_orders
+group by EXTRACT(HOUR from order_time);
+
+-- 10. What was the volume of orders for each day of the week?
+SELECT
+    TO_CHAR(order_time, 'FMDay') AS weekday_name,
+    COUNT(*) AS orders
+FROM customer_orders
+GROUP BY weekday_name
+ORDER BY weekday_name;
