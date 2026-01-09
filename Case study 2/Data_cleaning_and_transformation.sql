@@ -4,6 +4,7 @@
 -- In this file, the data cleaning and transformation operations are being done.
 
 -- In the customer_orders table, the exclusions and extras field had null values, so they were replaced with blank spaces in the table (Temp tables can also be used)
+UPDATE customer_orders
 SET exclusions =  CASE WHEN
 		exclusions is null or exclusions = 'null' THEN ''
         ELSE exclusions

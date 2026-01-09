@@ -41,3 +41,40 @@ count(*) as total_orders
 from order_time_metrics
 group by pizza_count
 order by pizza_count;
+
+-- 4.What was the average distance travelled for each customer?
+
+Select c.customer_id,
+AVG(r.distance)
+from 
+customer_orders c join runner_orders r
+on c.order_id = r.order_id
+where r.cancellation = ''
+group by c.customer_id
+order by c.customer_id;
+
+
+-- 5. What was the difference between the longest and shortest delivery times for all orders?
+
+Select 
+MAX(duration) - MIN(duration) as time_diff
+from 
+runner_orders
+where duration is not null;
+
+
+-- 6. What was the average speed for each runner for each delivery and do you notice any trend for these values?
+
+SELECT 
+  r.runner_id, 
+  c.customer_id, 
+  c.order_id, 
+  COUNT(c.order_id) AS pizza_count, 
+  r.distance, (r.duration / 60) AS duration_hrs , 
+ (r.distance/r.duration * 60) AS average_speed
+FROM runner_orders AS r
+JOIN customer_orders AS c
+  ON r.order_id = c.order_id
+WHERE cancellation = ''
+GROUP BY r.runner_id, c.customer_id, c.order_id, r.distance, r.duration
+ORDER BY c.order_id;
